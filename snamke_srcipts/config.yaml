@@ -1,0 +1,46 @@
+Bin: /path/to/PEGUIDE
+ChromSize: /path/to/hg38/GRCh38.chrom.sizes
+Genome: GRCh38
+Genomedir: /path/to/hg38
+Samples:
+- A
+- B
+Targets:
+  A:
+    name: VEGFAT2A
+    seq: GACCCCCTCCACCCCGCCTCNGG
+  B:
+    name: VEGFAT2B
+    seq: GACCCCCTCCACCCCGCCTCNGG
+adapters:
+  A.15F:
+    five_prime_end_read1_adapter: AGATGTGTATAAGAGACAG
+    five_prime_end_read2_adapter: ACCAATCCACCAACC
+    three_prime_end_read1_adapter: GGTTGGTGGATTGGT
+    three_prime_end_read2_adapter: CTGTCTCTTATACACATCT
+  A.18R:
+    five_prime_end_read1_adapter: AGATGTGTATAAGAGACAG
+    five_prime_end_read2_adapter: GTATGAGGTTGGTGGATT
+    three_prime_end_read1_adapter: AATCCACCAACCTCATAC
+    three_prime_end_read2_adapter: CTGTCTCTTATACACATCT
+  B.15F:
+    five_prime_end_read1_adapter: AGATGTGTATAAGAGACAG
+    five_prime_end_read2_adapter: ACCAATCCACCAACC
+    three_prime_end_read1_adapter: GGTTGGTGGATTGGT
+    three_prime_end_read2_adapter: CTGTCTCTTATACACATCT
+  B.18R:
+    five_prime_end_read1_adapter: AGATGTGTATAAGAGACAG
+    five_prime_end_read2_adapter: GTATGAGGTTGGTGGATT
+    three_prime_end_read1_adapter: AATCCACCAACCTCATAC
+    three_prime_end_read2_adapter: CTGTCTCTTATACACATCT
+extend_seq:
+  A:
+  - TC
+  - GG
+  B:
+  - TC
+  - GG
+igvtools: java -Xmx1500m --module-path=/path/to/igv/lib @/path/to/igv/igv.args --module=org.igv/org.broad.igv.tools.IgvTools
+primer_F: 15F
+primer_R: 18R
+thread: 16

@@ -40,7 +40,7 @@ class GuideSeq:
         logger.info('Loading manifest...')
 
         with open(manifest_path, 'r') as f:
-            manifest_data = yaml.load(f)
+            manifest_data = yaml.load(f,  Loader=yaml.CLoader)
 
         try:
             # Validate manifest data

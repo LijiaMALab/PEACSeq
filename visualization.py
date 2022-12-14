@@ -15,15 +15,17 @@ def parseSitesFile(infile):
         f.readline()
         for line in f:
             line_items = line.split('\t')
-#            offtarget_sequence = line_items[21]
-            offtarget_sequence = line_items[24] ############modified by zhike
-            offtarget_reads = line_items[11]
+            offtarget_sequence = line_items[24]# modified by wyy
+#            offtarget_reads = line_items[11]
+            offtarget_reads = line_items[22] # primerE gemometric mean, modified by wyy
+            ref_seq = line_items[35].strip('\n') # modified by wyy
 #            ref_seq = line_items[32]
-            ref_seq = line_items[35] #####modified by zhike
             if offtarget_sequence != '':
                 offtargets.append({'seq': offtarget_sequence.strip(),
-                                   'reads': int(offtarget_reads.strip())})
-    offtargets = sorted(offtargets, key=lambda x: x['reads'], reverse=True)
+#                                   'reads': int(offtarget_reads.strip())}) # modified by wyy
+                                   'PEAC score': offtarget_reads.strip()})
+#    offtargets = sorted(offtargets, key=lambda x: x['reads'], reverse=True) #modified by wyy
+    offtargets = sorted(offtargets, key=lambda x: float(x['PEAC score']), reverse=True)
     return offtargets, ref_seq
 
 
@@ -62,7 +64,8 @@ def visualizeOfftargets(infile, outfile, title=None):
         dwg.add(dwg.rect((x, y), (box_size, box_size), fill=colors[c]))
         dwg.add(dwg.text(c, insert=(x + 3, y + box_size - 3), fill='black', style="font-size:15px; font-family:Courier"))
 
-    dwg.add(dwg.text('Reads', insert=(x_offset + box_size * len(ref_seq) + 16, y_offset + box_size - 3), style="font-size:15px; font-family:Courier"))
+#    dwg.add(dwg.text('Reads', insert=(x_offset + box_size * len(ref_seq) + 16, y_offset + box_size - 3), style="font-size:15px; font-family:Courier"))
+    dwg.add(dwg.text('PEAC score', insert=(x_offset + box_size * len(ref_seq) + 16, y_offset + box_size - 3), style="font-size:15px; font-family:Courier")) #modified by wyy
 
     # Draw aligned sequence rows
     y_offset += 10  # leave some extra space after the reference row
@@ -76,7 +79,8 @@ def visualizeOfftargets(infile, outfile, title=None):
                 dwg.add(dwg.rect((x, box_size + y), (box_size, box_size), fill=colors[c]))
                 dwg.add(dwg.text(c, insert=(x + 3, 2 * box_size + y - 3), fill='black', style="font-size:15px; font-family:Courier"))
 
-        reads_text = dwg.text(str(seq['reads']), insert=(box_size * (len(ref_seq) + 1) + 20, y_offset + box_size * (j + 2) - 2), fill='black', style="font-size:15px; font-family:Courier")
+#        reads_text = dwg.text(str(seq['reads']), insert=(box_size * (len(ref_seq) + 1) + 20, y_offset + box_size * (j + 2) - 2), fill='black', style="font-size:15px; font-family:Courier")
+        reads_text = dwg.text(str(seq['PEAC score']), insert=(box_size * (len(ref_seq) + 1) + 20, y_offset + box_size * (j + 2) - 2), fill='black', style="font-size:15px; font-family:Courier") # modified by wyy
         dwg.add(reads_text)
 
     dwg.save()

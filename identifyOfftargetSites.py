@@ -71,6 +71,8 @@ class chromosomePosition():
             self.chromosome_barcode_dict[chromosome][position]['-primer1E'] = collections.Counter()
             self.chromosome_barcode_dict[chromosome][position]['-primer2E'] = collections.Counter()
 
+        # self.chromosome_barcode_dict[chromosome][position][strand][barcode] = self.chromosome_barcode_dict[chromosome][position][strand][barcode] + count if self.chromosome_barcode_dict[chromosome][position][strand][barcode] else count
+        # self.chromosome_barcode_dict[chromosome][position][strand + primer][barcode] = self.chromosome_barcode_dict[chromosome][position][strand + primer][barcode] + count if self.chromosome_barcode_dict[chromosome][position][strand + primer][barcode] else count
         self.chromosome_barcode_dict[chromosome][position][strand][barcode] += count
         self.chromosome_barcode_dict[chromosome][position][strand + primer][barcode] += count
         self.chromosome_barcode_dict[chromosome][position][strand + primer + '_total'] += count
@@ -221,7 +223,7 @@ def analyze(sam_filename, reference_genome, outfile, annotations):
         os.makedirs(output_folder)
 
     logger.info("Processing SAM file %s", sam_filename)
-    file = open(sam_filename, 'rU')
+    file = open(sam_filename, 'r')
     __, filename_tail = os.path.split(sam_filename)
     chromosome_position = chromosomePosition(reference_genome)
     for line in file:
@@ -232,8 +234,8 @@ def analyze(sam_filename, reference_genome, outfile, annotations):
 #            if int(mapq) >= 50 and int(sam_flag) & 128 and not int(sam_flag) & 2048:
             if int(mapq) >= 50 and int(sam_flag) & 128 and not int(sam_flag) & 2048: #########zhike
                 # Second read in pair
-                barcode, count, primer,p = parseReadName(full_read_name)   ###########zhike
-#                logger.info("Reads: %s %s %s %s %s", barcode, count, primer, p, line)   ###########zhike
+                barcode, count, primer, p = parseReadName(full_read_name)   ###########zhike
+                # logger.info("Reads: %s %s %s %s %s", barcode, count, primer, p, line)   ###########zhike
 #                primer = assignPrimerstoReads(read_sequence, sam_flag)  ###########zhike
                 if int(template_length) < 0:  # Reverse read
                     read_position = int(position_of_mate) + abs(int(template_length)) - 1
@@ -279,9 +281,8 @@ def analyze(sam_filename, reference_genome, outfile, annotations):
                     target_end_absolute = int(row[2]) + 35 - target_start_relative #zhike
                 else:
                     BED_chromosome, target_start_absolute, target_end_absolute, BED_score, BED_name = [""] * 5
-                f.write('\t'.join(row[4:8] + [filename_tail] + row[0:4] + row[8:] +
-                                  [str(x) for x in sequence, mismatches, length, BED_chromosome, target_start_absolute,
-                                   target_end_absolute, BED_name, BED_score, strand] + [str(x) for x in annotation] + ['\n']))
+                info1 = [str(x) for x in (sequence, mismatches, length, BED_chromosome, target_start_absolute, target_end_absolute, BED_name, BED_score, strand)]
+                f.write('\t'.join(row[4:8] + [filename_tail] + row[0:4] + row[8:] + info1 + [str(x) for x in annotation] + ['\n']))
             else:
                 # logger.info([str(x) for x in row[4:8] + [filename_tail] + row[0:4] + row[8:] + [""]*9 + annotation] + ['\n'])
                 f.write('\t'.join([str(x) for x in row[4:8] + [filename_tail] + row[0:4] + row[8:] + [""] * 9 + annotation] + ['\n']))
@@ -329,7 +330,7 @@ def loadFileIntoArray(filename):
 
 
 def parseReadName(read_name):
-#    m = re.search(r'([ACGTN]{8}_[ACGTN]{6}_[ACGTN]{6})_([0-9]*)', read_name)
+    # m = re.search(r'([ACGTN]{8}_[ACGTN]{6}_[ACGTN]{6})_([0-9]*)', read_name)
     m = re.search(r'([ACGTN]{6,8}_[0-9]*)_([0-9]*)_([0-9]*)', read_name)# modified by zhike
     if m:
 #       molecular_index, count = m.group(1), m.group(2)
@@ -352,6 +353,17 @@ def parseReadName(read_name):
         return None, None, None, None
 
 
+# def parseReadName(read_name):
+#     m = re.search(r'([ACGTN]{8}_[ACGTN]{6}_[ACGTN]{6})_([0-9]*)', read_name)
+#     # m = re.search(r'([ACGTN]{6,8}_[0-9]*)_([0-9]*)_([0-9]*)', read_name)# modified by zhike
+#     if m:
+#       molecular_index, count = m.group(1), m.group(2)
+#       return molecular_index, int(count)
+#     else:
+#         print(read_name)
+#     return None, None
+
+
 def processLine(line):
     fields = line.rstrip('\r\n').split('\t')
     filename = fields[0]
@@ -360,7 +372,7 @@ def processLine(line):
 
 
 def reverseComplement(sequence):
-    transtab = string.maketrans("ACGTacgt", "TGCATGCA")
+    transtab = str.maketrans("ACGTacgt", "TGCATGCA")
     return sequence.translate(transtab)[::-1]
 
 

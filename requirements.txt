@@ -1,0 +1,7 @@
+HTSeq
+PyYAML
+swalign
+pyfaidx
+svgwrite
+regex
+snakemake
